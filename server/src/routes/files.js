@@ -1,0 +1,247 @@
+import { Hono } from "hono";
+import { randomUUID } from "crypto";
+import { writeFile, unlink } from "fs/promises";
+import path from "path";
+import { fileURLToPath } from "url";
+import { FILE_CATEGORIES, formatFileSize } from "@openmodel/shared";
+import { dbUtils } from "../lib/db.js";
+import { ensureSession } from "../middleware/auth.js";
+import { createRateLimiter } from "../middleware/rateLimiter.js";
+import { HTTP_STATUS } from "../lib/httpStatus.js";
+import { ENDPOINT_RATE_LIMITS } from "../lib/constants.js";
+import {
+  createStoredFilename,
+  validateFile,
+  calculateFileHash,
+  deleteFileFromDisk,
+  ensureUploadDirectory,
+  validateFileAccess,
+  getAttachmentDownloadPolicy,
+  FILE_CONFIG,
+} from "../lib/fileUtils.js";
+import { validateImageDimensions } from "../lib/imageValidation.js";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const PROJECT_ROOT = path.resolve(__dirname, "../../..");
+
+export const filesRouter = new Hono();
+
+// Apply auth middleware to all routes
+filesRouter.use("/*", ensureSession);
+
+function contentDisposition(disposition, filename) {
+  const fallback = filename.replace(/["\\\r\n]/g, "_");
+  return `${disposition}; filename="${fallback}"; filename*=UTF-8''${encodeURIComponent(filename)}`;
+}
+
+filesRouter.post("/", createRateLimiter(ENDPOINT_RATE_LIMITS.FILE_UPLOAD), async (c) => {
+  const user = c.get("user");
+  const formData = await c.req.formData();
+  const file = formData.get("file");
+
+  if (!file || !(file instanceof File)) {
+    return c.json({ error: "No file provided" }, HTTP_STATUS.BAD_REQUEST);
+  }
+
+  // Validate file type and size
+  const validation = validateFile({
+    mimeType: file.type,
+    size: file.size,
+    filename: file.name,
+  });
+  if (!validation.valid) {
+    return c.json({ error: validation.error }, HTTP_STATUS.BAD_REQUEST);
+  }
+  const classification = validation.classification;
+
+  // Generate file ID and create stored filename
+  const fileId = randomUUID();
+  const storedFilename = createStoredFilename(fileId, file.name);
+  const filePath = path.join(FILE_CONFIG.UPLOAD_DIR, storedFilename);
+
+  // Read file contents
+  const arrayBuffer = await file.arrayBuffer();
+  const buffer = Buffer.from(arrayBuffer);
+
+  let imageDimensions = null;
+  if (classification?.category === FILE_CATEGORIES.IMAGE) {
+    try {
+      imageDimensions = validateImageDimensions(
+        buffer,
+        classification.effectiveMimeType,
+        file.name
+      );
+    } catch (err) {
+      return c.json({ error: err.message }, HTTP_STATUS.BAD_REQUEST);
+    }
+  }
+
+  // Calculate file hash (for future deduplication)
+  const fileHash = calculateFileHash(buffer);
+
+  // Ensure upload directory exists
+  await ensureUploadDirectory();
+
+  // Save file to disk
+  await writeFile(filePath, buffer);
+
+  // Save file metadata to database
+  const relativePath = path.join("server/data/uploads", storedFilename);
+  try {
+    dbUtils.createFile(
+      fileId,
+      user.id,
+      file.name,
+      storedFilename,
+      relativePath,
+      file.type,
+      file.size,
+      fileHash,
+      {
+        originalName: file.name,
+        originalMimeType: classification?.originalMimeType ?? file.type,
+        attachmentCategory: classification?.category ?? null,
+        downloadPolicy: classification?.downloadPolicy ?? null,
+        ...(imageDimensions || {}),
+        uploadedAt: Date.now(),
+      }
+    );
+  } catch (err) {
+    await deleteFileFromDisk(filePath);
+    throw err;
+  }
+
+  return c.json({
+    id: fileId,
+    filename: file.name,
+    size: file.size,
+    sizeFormatted: formatFileSize(file.size),
+    mimeType: file.type,
+    category: classification?.category ?? null,
+    hash: fileHash,
+    createdAt: Date.now(),
+  });
+});
+
+filesRouter.get("/:id", async (c) => {
+  const user = c.get("user");
+  const fileId = c.req.param("id");
+
+  const file = dbUtils.getFileById(fileId);
+  const access = validateFileAccess(file, user);
+  if (!access.authorized) {
+    const statusCode = access.reason === "File not found" ? 404 : 403;
+    return c.json({ error: access.reason }, statusCode);
+  }
+
+  // Return metadata
+  return c.json({
+    id: file.id,
+    filename: file.filename,
+    size: file.size,
+    sizeFormatted: formatFileSize(file.size),
+    mimeType: file.mime_type,
+    hash: file.hash,
+    createdAt: file.created_at,
+    meta: file.meta,
+  });
+});
+
+filesRouter.get("/:id/content", async (c) => {
+  try {
+    const user = c.get("user");
+    const fileId = c.req.param("id");
+
+    const file = dbUtils.getFileById(fileId);
+    const access = validateFileAccess(file, user);
+    if (!access.authorized) {
+      const statusCode = access.reason === "File not found" ? 404 : 403;
+      return c.json({ error: access.reason }, statusCode);
+    }
+
+    const filePath = path.join(PROJECT_ROOT, file.path);
+    const diskFile = Bun.file(filePath);
+    if (!(await diskFile.exists())) {
+      return c.json({ error: "File not found on disk" }, HTTP_STATUS.NOT_FOUND);
+    }
+
+    // Determine download policy based on file type
+    const downloadPolicy = getAttachmentDownloadPolicy(file);
+
+    // Set appropriate headers
+    let disposition;
+    if (downloadPolicy === "attachmentOnly" || downloadPolicy === "textAttachmentOnly") {
+      disposition = "attachment";
+    } else {
+      disposition = "inline";
+    }
+
+    c.header("Content-Type", file.mime_type || "application/octet-stream");
+    c.header("Content-Length", file.size.toString());
+    c.header("Content-Disposition", contentDisposition(disposition, file.filename));
+
+    // Add nosniff header for all file downloads to prevent MIME type sniffing
+    c.header("X-Content-Type-Options", "nosniff");
+
+    return new Response(diskFile, { headers: c.res.headers });
+  } catch (error) {
+    console.error("Get file content error:", error);
+    if (error.code === "ENOENT") {
+      return c.json({ error: "File not found on disk" }, HTTP_STATUS.NOT_FOUND);
+    }
+    return c.json({ error: "Failed to retrieve file" }, HTTP_STATUS.INTERNAL_SERVER_ERROR);
+  }
+});
+
+filesRouter.delete("/:id", async (c) => {
+  const user = c.get("user");
+  const fileId = c.req.param("id");
+
+  const file = dbUtils.getFileById(fileId);
+  const access = validateFileAccess(file, user);
+  if (!access.authorized) {
+    const statusCode = access.reason === "File not found" ? 404 : 403;
+    return c.json({ error: access.reason }, statusCode);
+  }
+
+  const deleted = dbUtils.deleteFile(fileId);
+
+  if (!deleted) {
+    return c.json({ error: "File not found" }, HTTP_STATUS.NOT_FOUND);
+  }
+
+  // Delete from disk - use the path field which includes subdirectories
+  const filePath = path.join(PROJECT_ROOT, file.path);
+  try {
+    await unlink(filePath);
+  } catch (error) {
+    if (error.code !== "ENOENT") {
+      console.error("Failed to delete file from disk:", error);
+    }
+  }
+
+  return c.json({ message: "File deleted successfully" });
+});
+
+filesRouter.get("/", async (c) => {
+  const user = c.get("user");
+
+  // Get all files for user
+  const files = dbUtils.getFilesByUserId(user.id);
+
+  // Format response
+  const formattedFiles = files.map((file) => ({
+    id: file.id,
+    filename: file.filename,
+    size: file.size,
+    sizeFormatted: formatFileSize(file.size),
+    mimeType: file.mime_type,
+    createdAt: file.created_at,
+  }));
+
+  return c.json({
+    files: formattedFiles,
+    total: formattedFiles.length,
+  });
+});

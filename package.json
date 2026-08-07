@@ -1,0 +1,45 @@
+{
+  "name": "openmodel-chat-monorepo",
+  "version": "0.2.1",
+  "private": true,
+  "description": "OpenModel Chat - privacy-first, offline-capable AI chat with any LLM provider.",
+  "type": "module",
+  "workspaces": [
+    "frontend",
+    "server",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "concurrently \"bun run dev:frontend\" \"bun run dev:server\"",
+    "dev:frontend": "cd frontend && bun run dev",
+    "dev:server": "cd server && bun run dev",
+    "build": "bun run build:frontend && bun run build:server",
+    "build:frontend": "cd frontend && bun run build",
+    "build:server": "cd server && bun run build",
+    "start": "cd server && bun run start",
+    "clean": "rm -rf frontend/dist server/dist node_modules frontend/node_modules server/node_modules packages/*/node_modules",
+    "install:all": "bun install",
+    "format": "prettier --write \"frontend/src/**/*.{js,jsx,ts,tsx,css,json}\" \"server/src/**/*.{js,jsx,ts,tsx,json}\"",
+    "format:check": "prettier --check \"frontend/src/**/*.{js,jsx,ts,tsx,css,json}\" \"server/src/**/*.{js,jsx,ts,tsx,json}\"",
+    "lint": "oxlint -c .oxlintrc.json --deny-warnings .",
+    "lint:fix": "oxlint -c .oxlintrc.json --fix .",
+    "test": "cd server && bun test",
+    "test:frontend": "cd frontend && bun run test",
+    "test:all": "bun run test && bun run test:frontend"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/saurabhdiwate/openmodel-chat"
+  },
+  "license": "MIT",
+  "author": "Saurabh Diwate",
+  "devDependencies": {
+    "concurrently": "^9.2.1",
+    "oxlint": "^1.62.0",
+    "prettier": "^3.8.3",
+    "prettier-plugin-tailwindcss": "^0.7.4"
+  },
+  "dependencies": {
+    "fuzzysort": "^3.1.0"
+  }
+}

@@ -1,0 +1,80 @@
+# OpenModel Chat Git Ignore
+
+# dependencies
+/node_modules
+/.pnp
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/versions
+
+# testing
+/coverage
+
+# Monorepo packages
+/frontend/node_modules
+/server/node_modules
+/packages/shared/node_modules
+
+# production
+/build
+dist
+dist-ssr
+*.local
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# do not commit any .env files to git
+.env
+!.env.sample
+.env.backup
+
+# Database (ignore all .db files everywhere)
+*.db
+*.db-shm
+*.db-wal
+*.db.backup*
+*.db.bak
+
+# File uploads (keep directory structure but ignore uploaded files)
+/server/data/uploads/*
+!/server/data/uploads/.gitkeep
+
+#cache
+.eslintcache
+
+# vercel
+.vercel
+
+# typescript
+*.tsbuildinfo
+next-env.d.ts
+/typescript
+
+#misc
+/_backup
+/.idea
+/docs
+/specs
+
+# Editor directories and files
+._*
+.vscode/*
+!.vscode/extensions.json
+.DS_Store
+.Spotlight-V100
+.Trashes
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?

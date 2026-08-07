@@ -1,0 +1,43 @@
+{
+  "name": "@openmodel/server",
+  "version": "0.2.1",
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "init": "bun run src/init.js",
+    "dev": "bun run src/init.js && bun run src/index.js",
+    "build": "echo 'Build complete'",
+    "start": "bun run src/init.js && bun run src/index.js",
+    "test": "bun test src/test/",
+    "test:coverage": "bun test src/test/ --coverage"
+  },
+  "dependencies": {
+    "@ai-sdk/amazon-bedrock": "^4.0.89",
+    "@ai-sdk/anthropic": "^3.0.66",
+    "@ai-sdk/azure": "^3.0.51",
+    "@ai-sdk/cerebras": "^2.0.42",
+    "@ai-sdk/cohere": "^3.0.28",
+    "@ai-sdk/deepseek": "^2.0.27",
+    "@ai-sdk/fireworks": "^2.0.43",
+    "@ai-sdk/google": "^3.0.56",
+    "@ai-sdk/google-vertex": "^4.0.100",
+    "@ai-sdk/groq": "^3.0.33",
+    "@ai-sdk/mistral": "^3.0.28",
+    "@ai-sdk/openai": "^3.0.50",
+    "@ai-sdk/xai": "^3.0.77",
+    "@openmodel/shared": "workspace:*",
+    "@hono/node-server": "^1.19.12",
+    "@node-rs/argon2": "^2.0.2",
+    "adm-zip": "^0.5.17",
+    "ai": "^6.0.144",
+    "dotenv": "^16.6.1",
+    "hono": "^4.12.10",
+    "node-html-parser": "^7.1.0",
+    "ollama-ai-provider": "^1.2.0",
+    "replicate": "^1.4.0",
+    "zod": "^4.3.6"
+  },
+  "devDependencies": {
+    "@types/node": "^20.19.37"
+  }
+}

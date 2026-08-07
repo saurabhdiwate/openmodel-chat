@@ -1,0 +1,11 @@
+blank_issues_enabled: false
+contact_links:
+  - name: 💬 Discussions
+    url: https://github.com/saurabhdiwate/openmodel-chat/discussions
+    about: Ask questions, share ideas, or show off your setup
+  - name: 📖 Documentation
+    url: https://github.com/saurabhdiwate/openmodel-chat#readme
+    about: Read the README, CLAUDE.md (architecture), and AGENTS.md (coding principles)
+  - name: 🗺️ Roadmap
+    url: https://github.com/saurabhdiwate/openmodel-chat#roadmap
+    about: Check what's already planned before requesting features
