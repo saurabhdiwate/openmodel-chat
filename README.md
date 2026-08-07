@@ -5,7 +5,7 @@
 <h1 align="center">💬 OpenModel Chat</h1>
 
 <p align="center">
-  <strong>A production-grade, privacy-first AI chat platform</strong> — streaming responses, cross-conversation memory, web search, image generation, voice I/O, and a fully white-labelable multi-user admin console.
+  <strong>A production-grade, privacy-first AI chat platform</strong> — streaming responses, cross-conversation memory, web search, image generation, voice I/O, and a multi-user admin console.
 </p>
 
 <p align="center">
@@ -54,12 +54,12 @@
 
 ## ✨ Why This Project
 
-This is not a tutorial demo — it's a **production-ready product** I designed, built, and white-labeled end-to-end. It demonstrates the exact engineering a client cares about:
+This is not a tutorial demo — it's a **production-ready product** I designed, built, and shipped end-to-end. It demonstrates the exact engineering a client cares about:
 
 - 🏗️ **Full-stack ownership** — a modern SPA frontend, a hardened REST API, a database layer, and deployment config all in one monorepo.
 - 🔐 **Security done properly** — password hashing, encrypted secrets, SSRF protection, rate limiting, RBAC, and security headers.
 - 🧪 **Real testing discipline** — **460 passing tests** covering API routes, auth, file security, and critical UI behavior.
-- ⚙️ **Scalable architecture** — provider abstraction, pluggable AI models, theme system, and a white-labeling layer built in from day one.
+- ⚙️ **Scalable architecture** — provider abstraction, pluggable AI models, and a theme system built in from day one.
 - 🚀 **Fast & lightweight** — a ~3 KB Preact runtime, no SSR overhead, and an instant, fluid UI.
 
 ---
@@ -79,7 +79,7 @@ This is not a tutorial demo — it's a **production-ready product** I designed, 
 | 🎤 **Voice** | Speech-to-text input and text-to-speech output with voice selection |
 | ⌨️ **Power user** | Keyboard shortcuts, virtualized chat lists, drag-and-drop files, folder organization, search |
 | 👥 **Multi-user** | Authentication with roles (admin / member / readonly), user management, password resets |
-| 🎭 **White-labeling** | Change the app name, logo, and branding for any organization from the admin panel |
+| 🎭 **Customization** | Change the app name, logo, and branding from the admin panel |
 | 🔌 **Provider Hub** | Discover and add providers with one click, pull Ollama models right from the UI |
 
 ---
