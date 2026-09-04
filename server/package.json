@@ -32,7 +32,7 @@
     "ai": "^6.0.144",
     "dotenv": "^16.6.1",
     "hono": "^4.12.10",
-    "node-html-parser": "^7.1.0",
+    "node-html-parser": "^9.0.2",
     "ollama-ai-provider": "^1.2.0",
     "replicate": "^1.4.0",
     "zod": "^4.3.6"
