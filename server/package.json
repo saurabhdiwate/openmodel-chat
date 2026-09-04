@@ -12,7 +12,7 @@
     "test:coverage": "bun test src/test/ --coverage"
   },
   "dependencies": {
-    "@ai-sdk/amazon-bedrock": "^4.0.89",
+    "@ai-sdk/amazon-bedrock": "^5.0.69",
     "@ai-sdk/anthropic": "^3.0.66",
     "@ai-sdk/azure": "^3.0.51",
     "@ai-sdk/cerebras": "^2.0.42",
