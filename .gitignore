@@ -60,11 +60,15 @@ lerna-debug.log*
 next-env.d.ts
 /typescript
 
+# IDE / editor
+.openplaywright
+*.code-workspace
+
 #misc
 /_backup
-/.idea
-/docs
-/specs
+ /.idea
+ /docs
+ /specs
 
 # Editor directories and files
 ._*

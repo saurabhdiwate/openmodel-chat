@@ -301,15 +301,18 @@ New to the stack? Here's where to learn:
 
 Before submitting, make sure:
 
-- [ ] Code follows the style guidelines in `AGENTS.md`
-- [ ] No TypeScript errors (if any .d.ts files need updating)
+- [ ] `bun run lint` passes
+- [ ] `bun run test` passes (server)
+- [ ] `bun run test:frontend` passes (frontend)
 - [ ] `bun run build` completes successfully
+- [ ] Code follows the style guidelines in `AGENTS.md`
 - [ ] Tested in both light and dark modes (if UI change)
 - [ ] Tested offline functionality (if relevant)
 - [ ] Mobile responsive (if UI change)
 - [ ] No console errors or warnings
 - [ ] Commit messages are clear and descriptive
 - [ ] PR description explains what and why
+- [ ] No secrets or credentials committed
 
 ## ❤️ Code of Conduct
 
