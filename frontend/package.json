@@ -10,7 +10,7 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@ai-sdk/react": "^3.0.146",
+    "@ai-sdk/react": "^4.0.90",
     "@openmodel/shared": "workspace:*",
     "@headlessui/react": "^2.2.9",
     "@preact/compat": "^18.3.2",
