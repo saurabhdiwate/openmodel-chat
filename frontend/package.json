@@ -21,7 +21,7 @@
     "clsx": "^2.1.1",
     "fuzzysort": "^3.1.0",
     "katex": "^0.16.44",
-    "lucide-preact": "^0.554.0",
+    "lucide-preact": "^1.38.0",
     "nanoid": "^5.1.7",
     "preact": "^10.29.0",
     "react-markdown": "^9.1.0",
