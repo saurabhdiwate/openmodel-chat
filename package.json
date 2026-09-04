@@ -37,7 +37,7 @@
     "concurrently": "^9.2.1",
     "oxlint": "^1.62.0",
     "prettier": "^3.8.3",
-    "prettier-plugin-tailwindcss": "^0.7.4"
+    "prettier-plugin-tailwindcss": "^0.8.1"
   },
   "dependencies": {
     "fuzzysort": "^3.1.0"
