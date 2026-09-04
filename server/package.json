@@ -24,7 +24,7 @@
     "@ai-sdk/groq": "^3.0.33",
     "@ai-sdk/mistral": "^3.0.28",
     "@ai-sdk/openai": "^3.0.50",
-    "@ai-sdk/xai": "^3.0.77",
+    "@ai-sdk/xai": "^4.0.50",
     "@openmodel/shared": "workspace:*",
     "@hono/node-server": "^1.19.12",
     "@node-rs/argon2": "^2.0.2",
