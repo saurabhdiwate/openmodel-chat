@@ -20,7 +20,7 @@
     "ai": "^6.0.144",
     "clsx": "^2.1.1",
     "fuzzysort": "^3.1.0",
-    "katex": "^0.16.44",
+    "katex": "^0.18.5",
     "lucide-preact": "^0.554.0",
     "nanoid": "^5.1.7",
     "preact": "^10.29.0",
@@ -40,7 +40,7 @@
     "autoprefixer": "^10.4.27",
     "jsdom": "^29.1.0",
     "prettier": "^3.8.1",
-    "prettier-plugin-tailwindcss": "^0.6.14",
+    "prettier-plugin-tailwindcss": "^0.8.1",
     "tailwindcss": "^4.2.2",
     "vite": "^7.3.2",
     "vitest": "^4.1.5"
